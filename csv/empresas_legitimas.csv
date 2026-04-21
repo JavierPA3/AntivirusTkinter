@@ -1,0 +1,336 @@
+empresa,dominio,categoria
+Google,google.com,tecnologia
+Gmail,gmail.com,tecnologia
+YouTube,youtube.com,tecnologia
+Google Drive,drive.google.com,tecnologia
+Google Pay,pay.google.com,tecnologia
+Google Maps,maps.google.com,tecnologia
+Google Cloud,cloud.google.com,tecnologia
+Google Play,play.google.com,tecnologia
+Microsoft,microsoft.com,tecnologia
+Outlook,outlook.com,tecnologia
+Office 365,office.com,tecnologia
+OneDrive,onedrive.com,tecnologia
+Teams,teams.microsoft.com,tecnologia
+Xbox,xbox.com,tecnologia
+Azure,azure.microsoft.com,tecnologia
+Apple,apple.com,tecnologia
+iCloud,icloud.com,tecnologia
+iTunes,itunes.apple.com,tecnologia
+App Store,apps.apple.com,tecnologia
+Apple Pay,apple.com,tecnologia
+Amazon,amazon.es,ecommerce
+Amazon AWS,aws.amazon.com,tecnologia
+Amazon Business,business.amazon.es,ecommerce
+eBay,ebay.es,ecommerce
+AliExpress,aliexpress.com,ecommerce
+Wish,wish.com,ecommerce
+Shein,shein.com,ecommerce
+Temu,temu.com,ecommerce
+PcComponentes,pccomponentes.com,ecommerce
+Fnac,fnac.es,ecommerce
+PayPal,paypal.com,finanzas
+PayPal España,paypal.es,finanzas
+Stripe,stripe.com,finanzas
+Bizum,bizum.es,finanzas
+Square,squareup.com,finanzas
+Revolut,revolut.com,finanzas
+N26,n26.com,finanzas
+Wise,wise.com,finanzas
+Klarna,klarna.com,finanzas
+Splitit,splitit.com,finanzas
+Banco Santander,bancosantander.es,banca
+Santander Online,santander.es,banca
+BBVA,bbva.es,banca
+BBVA Net,bbvanetcash.com,banca
+CaixaBank,caixabank.es,banca
+CaixaBank Now,caixabanknow.com,banca
+Banco Sabadell,bancsabadell.com,banca
+Bankinter,bankinter.com,banca
+ING,ing.es,banca
+Openbank,openbank.es,banca
+EVO Banco,evobanco.com,banca
+Unicaja,unicaja.es,banca
+Ibercaja,ibercaja.es,banca
+Kutxabank,kutxabank.es,banca
+Abanca,abanca.com,banca
+Cajamar,cajamar.es,banca
+Triodos,triodos.es,banca
+Liberbank,liberbank.es,banca
+Laboral Kutxa,laboralkutxa.eus,banca
+Banca March,bancamarch.es,banca
+Banco Mediolanum,bancamediolanum.es,banca
+Myinvestor,myinvestor.es,banca
+Bnext,bnext.es,banca
+Cofidis,cofidis.es,banca
+Cetelem,cetelem.es,banca
+Netflix,netflix.com,entretenimiento
+Spotify,spotify.com,entretenimiento
+HBO Max,hbomax.com,entretenimiento
+Disney Plus,disneyplus.com,entretenimiento
+Amazon Prime,primevideo.com,entretenimiento
+Twitch,twitch.tv,entretenimiento
+Apple TV,tv.apple.com,entretenimiento
+Movistar Plus,movistarplus.es,entretenimiento
+DAZN,dazn.com,entretenimiento
+Filmin,filmin.es,entretenimiento
+Rakuten TV,rakuten.tv,entretenimiento
+SkyShowtime,skyshowtime.com,entretenimiento
+Crunchyroll,crunchyroll.com,entretenimiento
+Atresplayer,atresplayer.com,entretenimiento
+RTVE Play,rtveplay.es,entretenimiento
+Mitele,mitele.es,entretenimiento
+LinkedIn,linkedin.com,redes sociales
+Facebook,facebook.com,redes sociales
+Instagram,instagram.com,redes sociales
+Twitter,twitter.com,redes sociales
+WhatsApp,whatsapp.com,redes sociales
+TikTok,tiktok.com,redes sociales
+Telegram,telegram.org,redes sociales
+Pinterest,pinterest.com,redes sociales
+Snapchat,snapchat.com,redes sociales
+Reddit,reddit.com,redes sociales
+Tumblr,tumblr.com,redes sociales
+Mastodon,mastodon.social,redes sociales
+BeReal,bereal.com,redes sociales
+Threads,threads.net,redes sociales
+Discord,discord.com,redes sociales
+Skype,skype.com,redes sociales
+Agencia Tributaria,agenciatributaria.gob.es,gobierno
+Seguridad Social,seg-social.es,gobierno
+SEPE,sepe.es,gobierno
+DGT,dgt.es,gobierno
+Correos,correos.es,gobierno
+BOE,boe.es,gobierno
+Sede Electronica,sede.gob.es,gobierno
+Cl@ve,clave.gob.es,gobierno
+FNMT,fnmt.es,gobierno
+Ministerio Interior,interior.gob.es,gobierno
+Ministerio Sanidad,sanidad.gob.es,gobierno
+Policia Nacional,policia.es,gobierno
+Guardia Civil,guardiacivil.es,gobierno
+INE,ine.es,gobierno
+Ayuntamiento Madrid,madrid.es,gobierno
+Ayuntamiento Barcelona,barcelona.cat,gobierno
+Ayuntamiento Sevilla,sevilla.org,gobierno
+Ayuntamiento Valencia,valencia.es,gobierno
+Generalitat Catalunya,gencat.cat,gobierno
+Junta Andalucia,juntadeandalucia.es,gobierno
+Comunidad Madrid,comunidad.madrid,gobierno
+Movistar,movistar.es,telecomunicaciones
+Vodafone,vodafone.es,telecomunicaciones
+Orange,orange.es,telecomunicaciones
+MásMóvil,masmovil.es,telecomunicaciones
+Yoigo,yoigo.com,telecomunicaciones
+Pepephone,pepephone.com,telecomunicaciones
+Digi,digimobil.es,telecomunicaciones
+Lowi,lowi.es,telecomunicaciones
+Simyo,simyo.es,telecomunicaciones
+Jazztel,jazztel.com,telecomunicaciones
+Euskaltel,euskaltel.com,telecomunicaciones
+R Cable,rcable.es,telecomunicaciones
+Telecable,telecable.es,telecomunicaciones
+Finetwork,finetwork.com,telecomunicaciones
+Iberdrola,iberdrola.es,energia
+Endesa,endesa.es,energia
+Naturgy,naturgy.es,energia
+Repsol,repsol.com,energia
+TotalEnergies,totalenergies.es,energia
+Holaluz,holaluz.com,energia
+Octopus Energy,octopusenergy.com,energia
+Acciona,acciona.es,energia
+EDP,edp.com,energia
+Viesgo,viesgo.es,energia
+Renfe,renfe.com,transporte
+Iberia,iberia.com,transporte
+Vueling,vueling.com,transporte
+Ryanair,ryanair.com,transporte
+EasyJet,easyjet.com,transporte
+Cabify,cabify.com,transporte
+Uber,uber.com,transporte
+Glovo,glovoapps.com,transporte
+BlaBlaCar,blablacar.es,transporte
+Flixbus,flixbus.es,transporte
+Alsa,alsa.es,transporte
+Ouigo,ouigo.es,transporte
+Aena,aena.es,transporte
+El Corte Inglés,elcorteingles.es,ecommerce
+Zara,zara.com,ecommerce
+Mango,mango.com,ecommerce
+MediaMarkt,mediamarkt.es,ecommerce
+Decathlon,decathlon.es,ecommerce
+Mercadona,mercadona.es,ecommerce
+Carrefour,carrefour.es,ecommerce
+Wallapop,wallapop.com,ecommerce
+Milanuncios,milanuncios.com,ecommerce
+Lidl,lidl.es,ecommerce
+Aldi,aldi.es,ecommerce
+Leroy Merlin,leroymerlin.es,ecommerce
+Ikea,ikea.com,ecommerce
+H&M,hm.com,ecommerce
+Pull&Bear,pullandbear.com,ecommerce
+Bershka,bershka.com,ecommerce
+Stradivarius,stradivarius.com,ecommerce
+Massimo Dutti,massimodutti.com,ecommerce
+Nike,nike.com,ecommerce
+Adidas,adidas.es,ecommerce
+Zalando,zalando.es,ecommerce
+Privalia,privalia.com,ecommerce
+Veepee,veepee.es,ecommerce
+Booking,booking.com,viajes
+Airbnb,airbnb.es,viajes
+TripAdvisor,tripadvisor.es,viajes
+Expedia,expedia.es,viajes
+Kayak,kayak.es,viajes
+Trivago,trivago.es,viajes
+Rumbo,rumbo.es,viajes
+Logitravel,logitravel.com,viajes
+Civitatis,civitatis.com,viajes
+Paradores,parador.es,viajes
+GitHub,github.com,tecnologia
+GitLab,gitlab.com,tecnologia
+Stack Overflow,stackoverflow.com,tecnologia
+Atlassian,atlassian.com,tecnologia
+Slack,slack.com,tecnologia
+Zoom,zoom.us,tecnologia
+Dropbox,dropbox.com,tecnologia
+Notion,notion.so,tecnologia
+Figma,figma.com,tecnologia
+Adobe,adobe.com,tecnologia
+Canva,canva.com,tecnologia
+Trello,trello.com,tecnologia
+Jira,jira.com,tecnologia
+Confluence,confluence.atlassian.com,tecnologia
+Bitbucket,bitbucket.org,tecnologia
+Heroku,heroku.com,tecnologia
+Netlify,netlify.com,tecnologia
+Vercel,vercel.com,tecnologia
+Cloudflare,cloudflare.com,tecnologia
+DigitalOcean,digitalocean.com,tecnologia
+Linode,linode.com,tecnologia
+Shopify,shopify.com,tecnologia
+WordPress,wordpress.com,tecnologia
+Wix,wix.com,tecnologia
+Squarespace,squarespace.com,tecnologia
+DHL,dhl.es,logistica
+FedEx,fedex.com,logistica
+UPS,ups.com,logistica
+GLS,gls-spain.es,logistica
+SEUR,seur.com,logistica
+MRW,mrw.es,logistica
+Nacex,nacex.es,logistica
+Correos Express,correosexpress.com,logistica
+TNT,tnt.com,logistica
+Sending,sending.es,logistica
+Tipsa,tipsa.com,logistica
+Celeritas,celeritas.es,logistica
+Mapfre,mapfre.es,seguros
+Axa,axa.es,seguros
+Allianz,allianz.es,seguros
+Mutua Madrileña,mutua.es,seguros
+Sanitas,sanitas.es,seguros
+Cigna,cigna.es,seguros
+Adeslas,adeslas.es,seguros
+Asisa,asisa.es,seguros
+DKV,dkvseguros.es,seguros
+Generali,generali.es,seguros
+Zurich,zurich.es,seguros
+Helvetia,helvetia.es,seguros
+Línea Directa,lineadirecta.com,seguros
+Verti,verti.es,seguros
+Rastreator,rastreator.com,seguros
+Infojobs,infojobs.net,empleo
+Indeed,indeed.es,empleo
+Glassdoor,glassdoor.es,empleo
+Tecnoempleo,tecnoempleo.com,empleo
+Trabajo.es,trabajo.es,empleo
+Jobatus,jobatus.es,empleo
+Domestika,domestika.org,empleo
+Freelancer,freelancer.es,empleo
+Upwork,upwork.com,empleo
+Idealista,idealista.com,inmobiliaria
+Fotocasa,fotocasa.es,inmobiliaria
+Habitaclia,habitaclia.com,inmobiliaria
+Pisos.com,pisos.com,inmobiliaria
+Yaencontre,yaencontre.com,inmobiliaria
+Solvia,solvia.es,inmobiliaria
+Servihabitat,servihabitat.com,inmobiliaria
+Century 21,century21.es,inmobiliaria
+RE/MAX,remax.es,inmobiliaria
+Universidad Complutense,ucm.es,educacion
+Universidad Autonoma Madrid,uam.es,educacion
+Universidad Barcelona,ub.edu,educacion
+Universidad Sevilla,us.es,educacion
+Universidad Valencia,uv.es,educacion
+Universidad Zaragoza,unizar.es,educacion
+UNED,uned.es,educacion
+Coursera,coursera.org,educacion
+Udemy,udemy.com,educacion
+edX,edx.org,educacion
+Khan Academy,khanacademy.org,educacion
+Duolingo,duolingo.com,educacion
+Platzi,platzi.com,educacion
+OpenWebinars,openwebinars.net,educacion
+El Mundo,elmundo.es,medios
+El Pais,elpais.com,medios
+ABC,abc.es,medios
+La Vanguardia,lavanguardia.com,medios
+El Confidencial,elconfidencial.com,medios
+20 Minutos,20minutos.es,medios
+Marca,marca.com,medios
+As,as.com,medios
+Sport,sport.es,medios
+Cadena SER,cadenaser.com,medios
+COPE,cope.es,medios
+Onda Cero,ondacero.es,medios
+RNE,rne.es,medios
+Antena 3,antena3.com,medios
+Telecinco,telecinco.es,medios
+Cuatro,cuatro.com,medios
+La Sexta,lasexta.com,medios
+RTVE,rtve.es,medios
+Salesforce,salesforce.com,empresarial
+SAP,sap.com,empresarial
+Oracle,oracle.com,empresarial
+IBM,ibm.com,empresarial
+Cisco,cisco.com,empresarial
+Dell,dell.com,empresarial
+HP,hp.com,empresarial
+Lenovo,lenovo.com,empresarial
+Asus,asus.com,empresarial
+Acer,acer.com,empresarial
+Samsung,samsung.com,empresarial
+LG,lg.com,empresarial
+Sony,sony.es,empresarial
+Philips,philips.es,empresarial
+Siemens,siemens.com,empresarial
+Huawei,huawei.com,empresarial
+Xiaomi,mi.com,empresarial
+OnePlus,oneplus.com,empresarial
+Coinbase,coinbase.com,crypto
+Binance,binance.com,crypto
+Kraken,kraken.com,crypto
+Bitpanda,bitpanda.com,crypto
+eToro,etoro.com,crypto
+Degiro,degiro.es,finanzas
+Interactive Brokers,interactivebrokers.es,finanzas
+Renta 4,renta4.es,finanzas
+Self Bank,selfbank.es,finanzas
+Singular Bank,singular-bank.com,finanzas
+Openbank Invest,openbank.es,finanzas
+Santander Broker,santanderbroker.es,finanzas
+BBVA Broker,bbva.es,finanzas
+Inditex,inditex.com,empresarial
+El Corte Ingles Seguros,elcorteinglesseguros.es,seguros
+Securitas,securitas.es,empresarial
+Prosegur,prosegur.es,empresarial
+Telefonica,telefonica.com,telecomunicaciones
+Indra,indra.es,tecnologia
+Amadeus,amadeus.com,tecnologia
+Ferrovial,ferrovial.com,empresarial
+ACS,acs.es,empresarial
+Acciona,acciona.com,empresarial
+Meliá Hotels,melia.com,viajes
+NH Hotels,nh-hotels.com,viajes
+Barcelo Hotels,barcelo.com,viajes
+Riu Hotels,riu.com,viajes
