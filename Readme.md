@@ -1,6 +1,6 @@
 # ⚡ Antivirus ML
 
-Sistema de detección de malware basado en Machine Learning construido desde cero. Combina detección por firma (hash MD5) con dos modelos de Random Forest — uno para ejecutables y otro para código fuente — con interfaz gráfica de escritorio.
+Sistema de detección de malware y spam basado en Machine Learning construido desde cero. Combina detección por firma (hash MD5) con tres modelos de Random Forest — ejecutables, código fuente y correos electrónicos — con interfaz gráfica de escritorio, API REST y frontend web.
 
 ---
 
@@ -12,18 +12,21 @@ Sistema de detección de malware basado en Machine Learning construido desde cer
 4. [Estructura de archivos](#estructura-de-archivos)
 5. [Fase 1 — Dataset de ejecutables](#fase-1--dataset-de-ejecutables)
 6. [Fase 2 — Dataset de código fuente](#fase-2--dataset-de-código-fuente)
-7. [Fase 3 — Entrenamiento de modelos](#fase-3--entrenamiento-de-modelos)
-8. [Fase 4 — Motor del antivirus](#fase-4--motor-del-antivirus)
-9. [Fase 5 — Interfaz gráfica](#fase-5--interfaz-gráfica)
-10. [Resultados obtenidos](#resultados-obtenidos)
-11. [Cómo usar](#cómo-usar)
-12. [Limitaciones y mejoras futuras](#limitaciones-y-mejoras-futuras)
+7. [Fase 3 — Dataset de correos](#fase-3--dataset-de-correos)
+8. [Fase 4 — Entrenamiento de modelos](#fase-4--entrenamiento-de-modelos)
+9. [Fase 5 — Motor del antivirus](#fase-5--motor-del-antivirus)
+10. [Fase 6 — Interfaz gráfica](#fase-6--interfaz-gráfica)
+11. [Fase 7 — API REST Flask](#fase-7--api-rest-flask)
+12. [Fase 8 — Frontend React](#fase-8--frontend-react)
+13. [Resultados obtenidos](#resultados-obtenidos)
+14. [Cómo usar](#cómo-usar)
+15. [Limitaciones y mejoras futuras](#limitaciones-y-mejoras-futuras)
 
 ---
 
 ## Descripción del proyecto
 
-Este proyecto implementa un antivirus funcional que analiza archivos en cinco capas:
+Este proyecto implementa un antivirus funcional que analiza archivos en cinco capas y correos electrónicos de Gmail con detección de spam y phishing:
 
 ```
 CAPA 1 — Hash MD5        → firma conocida = malware inmediato
@@ -33,16 +36,19 @@ CAPA 4 — Contexto        → nombre, ubicación, tamaño del archivo
 CAPA 5 — Modelo ML       → Random Forest calibrado → score 0.0 a 1.0
 ```
 
-El sistema distingue entre dos tipos de archivos:
+El sistema distingue entre tres tipos de análisis:
 
-| Tipo | Extensiones | Modelo |
-|------|-------------|--------|
+| Tipo | Extensiones / Fuente | Modelo |
+|------|----------------------|--------|
 | Ejecutables Windows | `.exe`, `.dll` | Modelo 1 — PE Imports |
 | Código fuente | `.py`, `.ps1`, `.js`, `.sh`, `.bat`, `.vbs`, `.txt` | Modelo 2 — Features de código |
+| Correos Gmail | IMAP Gmail | Modelo 3 — Features de correo |
 
 ---
 
 ## Arquitectura del sistema
+
+### Análisis de archivos
 
 ```
 archivo sospechoso
@@ -73,7 +79,33 @@ archivo sospechoso
        ┌───────┼────────┐
        ▼       ▼        ▼
     LIMPIO  SOSPECH.  MALWARE
-    < 0.4   0.4-0.5   > 0.5
+    < 0.25  0.25-0.5   > 0.5
+```
+
+### Análisis de correos
+
+```
+correo entra
+       │
+       ▼
+¿Dominio en lista de 335 empresas verificadas?
+       │ SÍ → LEGÍTIMO directo (score 0.02)
+       │ NO
+       ▼
+Extracción de 57 features:
+  - Remitente (dominio, SPF, DKIM, reply-to)
+  - Asunto (entropía, mayúsculas, urgencia)
+  - Contenido (palabras spam ES/EN, patrones phishing)
+  - HTML (formularios, iframes, píxeles tracking)
+  - Adjuntos (extensiones peligrosas, doble extensión)
+       │
+       ▼
+   Modelo 3 — Random Forest calibrado
+       │
+       ▼
+score < 0.2   → LEGÍTIMO
+score 0.2-0.4 → SOSPECHOSO
+score > 0.4   → SPAM/PHISHING
 ```
 
 ---
@@ -83,7 +115,13 @@ archivo sospechoso
 ### Python 3.10+
 
 ```bash
-pip install pandas scikit-learn xgboost joblib pefile requests
+pip install pandas scikit-learn joblib pefile requests flask flask-cors beautifulsoup4 tldextract python-dotenv
+```
+
+### Node.js 18+ (solo para el frontend)
+
+```bash
+npm install
 ```
 
 ### Librerías utilizadas
@@ -95,43 +133,72 @@ pip install pandas scikit-learn xgboost joblib pefile requests
 | `joblib` | Guardar y cargar modelos |
 | `pefile` | Extraer imports de ejecutables Windows |
 | `tkinter` | Interfaz gráfica (incluido en Python) |
+| `flask` | API REST |
+| `flask-cors` | CORS para el frontend |
+| `beautifulsoup4` | Parseo de HTML de correos |
+| `tldextract` | Extracción de dominios de URLs |
 | `ast` | Análisis sintáctico de código Python |
 | `re` | Detección de patrones regex |
+| `imaplib` | Conexión IMAP con Gmail |
 
 ---
 
 ## Estructura de archivos
 
 ```
-Malware/
+Malware/                               ← Proyecto principal (local)
 │
-├── 01_descargar_dataset.py        # Descarga el dataset de Kaggle
-├── 02_limpiar_dataset.py          # Limpieza y balanceo del dataset EXE
-├── 04_extraer_features_codigo.py  # Extractor de features de código fuente
-├── 06_entrenar_modelo.py          # Entrenamiento con calibración
-├── analizador.py                  # Motor principal del antivirus
-├── app.py                         # Interfaz gráfica Tkinter
+├── analizador.py                      # Motor principal del antivirus
+├── app.py                             # Interfaz gráfica Tkinter
+├── api.py                             # API REST Flask
 │
-├── modelo.pkl                     # Modelo 1 entrenado (EXE/DLL)
-├── modelo_codigo.pkl              # Modelo 2 entrenado (código fuente)
-├── features_codigo.pkl            # Nombres de columnas del Modelo 2
+├── correoconnect.py                   # Conexión IMAP Gmail
+├── correoextrator.py                  # Extractor de features de correos
+├── correofeaturestexto.py             # Features semánticas de texto
+├── correo_analizador.py               # Motor de análisis de correos
+├── correo_construir_dataset.py        # Constructor del dataset de correos
+├── correo_modelo.py                   # Entrenamiento del modelo de correos
+├── correo_etiquetar.py                # Etiquetado manual de correos
 │
-├── dataset_codigo.csv             # Dataset de código fuente procesado
-├── historial.json                 # Historial de análisis por sesión
+├── 04_extraer_features_codigo.py      # Extractor de features de código fuente
+├── 06_entrenar_modelo.py              # Entrenamiento modelo código fuente
 │
-├── Codigos Buenos/                # Scripts limpios para entrenamiento
+├── modelo.pkl                         # Modelo 1 entrenado (EXE/DLL)
+├── modelo_codigo.pkl                  # Modelo 2 entrenado (código fuente)
+├── features_codigo.pkl                # Nombres de columnas del Modelo 2
+├── modelo_correos.pkl                 # Modelo 3 entrenado (correos)
+├── features_correos.pkl               # Nombres de columnas del Modelo 3
+├── empresas_legitimas.csv             # 335 empresas con dominios verificados
+│
+├── dataset_codigo.csv                 # Dataset de código fuente procesado
+├── dataset_correos.csv                # Dataset de correos procesado
+├── historial.json                     # Historial de análisis por sesión
+│
+├── Codigos Buenos/                    # Scripts limpios para entrenamiento
 │   ├── django-main/
 │   ├── flask-main/
 │   ├── TheAlgorithms-Python/
-│   ├── requests/
-│   ├── fastapi/
 │   └── ...
 │
-└── Codigos Malos/                 # Scripts maliciosos para entrenamiento
+└── Codigos Malos/                     # Scripts maliciosos para entrenamiento
     ├── nishang/
     ├── PayloadsAllTheThings/
     ├── pypi_malregistry/
     └── aggressor-scripts/
+
+antivirus-frontend/                    ← Frontend React
+├── src/
+│   ├── api/client.js
+│   ├── pages/
+│   │   ├── Analizador.jsx
+│   │   ├── Correos.jsx
+│   │   └── Historial.jsx
+│   └── components/
+│       ├── Header.jsx
+│       ├── UploadZone.jsx
+│       ├── ResultTable.jsx
+│       └── ResultDetail.jsx
+└── package.json
 ```
 
 ---
@@ -154,23 +221,6 @@ Malware  (1):    ~31.000 – 41.000
 
 > ⚠️ El dataset tiene un desbalanceo de ~3:1 a favor del malware. Se compensa con `class_weight='balanced'` en el modelo.
 
-### Limpieza
-
-```python
-import pandas as pd
-from sklearn.model_selection import train_test_split
-
-df = pd.read_csv('dataset.csv')
-
-# la columna se llama Label con mayúscula
-X = df.drop(columns=['Label'])
-y = df['Label']
-
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42, stratify=y
-)
-```
-
 ---
 
 ## Fase 2 — Dataset de código fuente
@@ -187,21 +237,6 @@ Como no existe un dataset público directo de scripts maliciosos vs limpios, se 
 | `swisskyrepo/PayloadsAllTheThings` | Payloads de múltiples categorías | `.ps1`, `.sh`, `.py` |
 | `rpp0/aggressor-scripts` | Scripts de ataque documentados | `.ps1` |
 | `lxyeternal/pypi_malregistry` | ~10.000 paquetes PyPI maliciosos | `.py` |
-
-> ⚠️ Los archivos de `pypi_malregistry` vienen comprimidos en `.tar.gz`. Usar el script de descompresión antes de extraer features.
-
-```python
-import tarfile
-from pathlib import Path
-import os
-
-for raiz, _, archivos in os.walk('Codigos Malos'):
-    for nombre in archivos:
-        if nombre.endswith(('.tar.gz', '.tgz')):
-            ruta = Path(raiz) / nombre
-            with tarfile.open(ruta, 'r:*') as tar:
-                tar.extractall(path=raiz)
-```
 
 **Scripts limpios (label = 0):**
 
@@ -235,42 +270,9 @@ Features:        52
 | `n_caracteres` | Longitud total del archivo |
 | `entropia` | Entropía de Shannon — valores altos indican ofuscación |
 
-#### Señales por lenguaje
+#### Señales por lenguaje (Python, PowerShell, Bash, JS, Batch, VBS, TXT)
 
-**Python (`.py`):**
-
-| Feature | Señal detectada |
-|---------|-----------------|
-| `n_eval` | Llamadas a `eval()` |
-| `n_exec` | Llamadas a `exec()` |
-| `n_base64` | Uso de codificación base64 |
-| `n_subprocess` | Importación de `subprocess` |
-| `n_socket` | Uso de sockets de red |
-| `n_requests` | Peticiones HTTP con `requests` |
-| `n_ctypes` | Llamadas directas a DLLs de Windows |
-| `n_winreg` | Modificación del registro de Windows |
-| `n_marshal` | Deserialización peligrosa |
-| `n_import_sospechoso` | Imports detectados por AST |
-
-**PowerShell (`.ps1`):**
-
-| Feature | Señal detectada |
-|---------|-----------------|
-| `n_iex` | `Invoke-Expression` / `IEX` |
-| `n_encoded` | `-EncodedCommand` / `-enc` |
-| `n_webclient` | `WebClient`, `DownloadString` |
-| `n_bypass` | Bypass de políticas |
-| `n_registro` | Modificación de claves Run |
-| `n_mimikatz` | Referencia a Mimikatz |
-
-**Shell / Bash (`.sh`):**
-
-| Feature | Señal detectada |
-|---------|-----------------|
-| `n_curl_pipe` | `curl ... \| bash` |
-| `n_wget_pipe` | `wget ... \| sh` |
-| `n_crontab` | Persistencia con cron |
-| `n_passwd` | Acceso a `/etc/passwd` |
+Más de 40 patrones regex detectados por extensión incluyendo `eval`, `exec`, `base64`, `subprocess`, `IEX`, `WebClient`, `CreateObject`, `WScript.Shell`, `curl | bash` y muchos más.
 
 #### Correlaciones entre señales
 
@@ -280,30 +282,49 @@ Features:        52
 | `combo_base64_ejecucion` | base64 + eval/exec | Alto |
 | `combo_ofuscacion_persistencia` | base64 + registro/cron | Muy alto |
 
-#### Features de ratio (nuevas)
+---
 
-| Feature | Fórmula |
-|---------|---------|
-| `ratio_señales_lineas` | total_señales / n_lineas |
-| `entropia_por_linea` | entropia / n_lineas |
-| `ratio_señales_chars` | total_señales / n_caracteres |
-| `n_red_total` | suma de todas las señales de red |
-| `n_ejecucion_total` | suma de todas las señales de ejecución |
-| `n_ofuscacion_total` | suma de todas las señales de ofuscación |
-| `n_combos` | número de combos activos (0, 1, 2 o 3) |
+## Fase 3 — Dataset de correos
 
-#### Soporte para `.txt`
+Se combinaron cuatro datasets públicos más un conjunto etiquetado manualmente:
 
-Los archivos de texto también se analizan buscando:
+| Dataset | Idioma | Correos | Fuente |
+|---------|--------|---------|--------|
+| `email_spam.csv` | Español | 1.207 | Kaggle |
+| `emails.csv` | Inglés (Enron) | 5.172 | Kaggle |
+| `fraud_email_.csv` | Inglés | 11.929 | Kaggle |
+| `phishing_email.csv` | Inglés | 18.650 | Kaggle |
+| Dataset manual | Español | 100 | Bandeja propia etiquetada |
 
-- Bloques base64 de más de 200 caracteres sin espacios
-- Referencias a `IEX`, `eval`, `powershell`, `cmd.exe`
-- URLs (`http://`, `https://`)
-- Detección de scripts disfrazados (shebangs, `import`, `function`)
+### Dataset final de correos
+
+```
+Total correos:  37.057
+Ham (legítimos): 22.421  (60%)
+Spam:            14.636  (40%)
+Features:            57
+```
+
+### Features extraídas por correo
+
+| Categoría | Features |
+|-----------|----------|
+| Remitente | dominio, nombre vs dominio, guiones, subdominios |
+| Asunto | longitud, mayúsculas, exclamaciones, entropía, urgencia |
+| URLs | total, dominios únicos, acortadas, externas |
+| HTML | longitud, formularios, iframes, scripts, píxel tracking |
+| Adjuntos | número, extensiones peligrosas, doble extensión |
+| Cabeceras | SPF falla, DKIM falla, DMARC falla, reply-to distinto |
+| Contenido | palabras spam ES/EN, patrones phishing, ratio mayúsculas |
+| Combos | spam+dinero, urgencia+acción, phishing+URL |
+
+### Lista blanca de empresas
+
+Se creó un CSV con **335 empresas legítimas** y sus dominios oficiales organizadas en 16 categorías (banca, gobierno, ecommerce, telecomunicaciones, tecnología...). Los correos cuyo dominio remitente aparece en esta lista son clasificados directamente como LEGÍTIMO sin pasar por el modelo.
 
 ---
 
-## Fase 3 — Entrenamiento de modelos
+## Fase 4 — Entrenamiento de modelos
 
 ### Modelo 1 — Ejecutables (PE Imports)
 
@@ -318,18 +339,15 @@ modelo = RandomForestClassifier(
 )
 ```
 
-**Resultados (umbral 0.5):**
+**Resultados:**
 
 ```
-              precision    recall  f1-score
-Benigno           0.66      0.81      0.73
-Malware           0.99      0.98      0.99
-accuracy                              0.98
+Accuracy:         98%
+Recall malware:   98%
+Precision malware: 99%
 ```
 
 ### Modelo 2 — Código fuente
-
-Se usa **calibración isotónica** para estirar las probabilidades hacia los extremos y mejorar la separación entre clases.
 
 ```python
 from sklearn.ensemble import RandomForestClassifier
@@ -351,72 +369,54 @@ modelo.fit(X_train, y_train)
 **Distribución de scores tras calibración:**
 
 ```
-Limpios  → media: 0.182  (antes ~0.35)
-Malware  → media: 0.878  (antes ~0.65)
+Limpios  → media: 0.182
+Malware  → media: 0.878
 ```
 
 **Resultados (umbral 0.5):**
 
 ```
-              precision    recall  f1-score   support
-Limpio            0.88      0.89      0.89       599
-Malware           0.92      0.91      0.91       779
-accuracy                              0.90      1378
-
-Limpios  correctos:   536
+Accuracy:              90%
+Recall malware:        91%
 Falsos positivos:      63
 Falsos negativos:      73
-Malware correctos:    706
 ```
 
-### Top 10 features más importantes
+### Modelo 3 — Correos
+
+Misma arquitectura que el Modelo 2 con calibración isotónica.
+
+**Resultados (umbral 0.4):**
 
 ```
-entropia                ████████████████████  0.186
-n_import_sospechoso     ███████████████████   0.179
-n_caracteres            █████████████         0.127
-n_lineas                █████████████         0.126
-n_requests              ████████████          0.111
-n_subprocess            ████████              0.074
-n_exec                  ████                  0.036
-n_urllib                ███                   0.027
-n_base64                ███                   0.027
-n_ctypes                ██                    0.025
+Accuracy:              89%
+Recall spam:           87%
+Ham media score:       0.130
+Spam media score:      0.797
+Falsos positivos:      457
+Falsos negativos:      385
 ```
 
-> La entropía y los imports sospechosos son los predictores más potentes — los archivos maliciosos tienden a estar más ofuscados y a usar imports de sistema más agresivos.
+### Top features más importantes (Modelo 3)
+
+```
+n_spam_palabras_en    ████████████████████████████████ 0.110
+n_palabras            █████████████████████ 0.068
+n_caracteres          ███████████████████ 0.064
+html_longitud         ██████████████████ 0.062
+entropia_texto        ████████████████ 0.056
+n_spam_palabras_es    █████████████ 0.047
+n_exclamaciones       ████████████ 0.042
+ratio_mayusculas      ████████████ 0.041
+n_simbolos_dinero     ██████████ 0.032
+combo_spam_dinero     ██████████ 0.031
+```
 
 ---
 
-## Fase 4 — Motor del antivirus
+## Fase 5 — Motor del antivirus
 
-El archivo `analizador.py` orquesta las cinco capas de análisis:
-
-```python
-UMBRAL_EXE    = 0.5
-UMBRAL_CODIGO = 0.5
-
-def analizar_archivo(ruta):
-    # Capa 1: hash MD5
-    md5 = calcular_md5(ruta)
-    if md5 in FIRMAS_CONOCIDAS:
-        return veredicto('MALWARE', score=1.0, motivo='Firma conocida')
-
-    # Capa 2-3: señales y correlaciones
-    features = extraer_features_codigo(ruta)
-
-    # Capa 4: contexto (extensión, ubicación)
-
-    # Capa 5: modelo ML
-    score = modelo.predict_proba(features)[0][1]
-
-    if score >= UMBRAL_CODIGO:
-        return veredicto('MALWARE', score)
-    elif score >= 0.15:
-        return veredicto('SOSPECHOSO', score)
-    else:
-        return veredicto('LIMPIO', score)
-```
+El archivo `analizador.py` orquesta las cinco capas de análisis de archivos y `correo_analizador.py` gestiona el análisis de correos con whitelist + modelo ML.
 
 ### Uso desde línea de comandos
 
@@ -447,9 +447,9 @@ python analizador.py mi_proyecto/
 
 ---
 
-## Fase 5 — Interfaz gráfica
+## Fase 6 — Interfaz gráfica
 
-La aplicación `app.py` es una interfaz Tkinter de escritorio con tema oscuro.
+La aplicación `app.py` es una interfaz Tkinter de escritorio con tema oscuro Catppuccin.
 
 ### Cómo ejecutar
 
@@ -459,35 +459,111 @@ python app.py
 
 ### Funcionalidades
 
-#### Pestaña Resultados
+#### Pestaña Archivos
 
-- Botón **Analizar archivo** — abre un selector de archivo individual
+- Botón **Analizar archivo** — selecciona un archivo individual
 - Botón **Analizar carpeta** — escanea recursivamente una carpeta completa
 - Tabla con veredicto, score y señales detectadas por archivo
-- **Panel lateral** — al hacer clic en cualquier resultado muestra:
-  - Veredicto con color (rojo/naranja/verde)
-  - Barra de riesgo visual proporcional al score
-  - Explicación en lenguaje humano del veredicto
-  - MD5, extensión y motivo del archivo
-  - Lista de señales detectadas con `!`
-  - Recomendación de acción concreta
+- **Panel lateral** — detalle completo al hacer clic en un resultado
+
+#### Pestaña Correos
+
+- **Login seguro** — introduce email y contraseña de aplicación de Gmail (16 caracteres)
+- **Enlace directo** a `myaccount.google.com/apppasswords` para generarla
+- **Carga automática** de los últimos 10 correos al conectarse
+- Spinner para seleccionar cuántos correos analizar
+- Checkbox para analizar solo no leídos
+- **Doble clic** en un correo para leer el contenido completo
 
 #### Pestaña Historial
 
-- Una fila por **sesión de análisis** (no por archivo individual)
-- Columnas: fecha, total de archivos, malware, sospechosos, limpios
-- Filas en rojo si hubo malware, naranja si solo sospechosos, verde si todo limpio
-- **Doble clic** en una sesión abre una ventana con todos los archivos analizados en esa sesión
+- Una fila por sesión de análisis
+- Doble clic en una sesión para ver todos sus archivos
 - Botón para borrar el historial completo
 
 ### Colores del sistema
 
 | Veredicto | Color | Significado |
 |-----------|-------|-------------|
-| MALWARE | 🔴 Rojo | Archivo malicioso confirmado |
-| SOSPECHOSO | 🟠 Naranja | Comportamiento inusual, no confirmado |
-| LIMPIO | 🟢 Verde | Sin señales detectadas |
+| MALWARE / SPAM/PHISHING | 🔴 Rojo | Archivo/correo malicioso |
+| SOSPECHOSO | 🟠 Naranja | Comportamiento inusual |
+| LIMPIO / LEGÍTIMO | 🟢 Verde | Sin señales detectadas |
 | NO SOPORTADO | ⚫ Gris | Extensión no analizable |
+
+---
+
+## Fase 7 — API REST Flask
+
+### Arrancar la API
+
+```bash
+python api.py
+```
+
+### Endpoints
+
+#### Archivos
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/api/health` | Estado de la API y modelos |
+| POST | `/api/analizar/archivo` | Analizar un archivo |
+| POST | `/api/analizar/carpeta` | Analizar carpeta en ZIP |
+| GET | `/api/historial` | Lista de sesiones |
+| GET | `/api/historial/<id>` | Detalle de sesión |
+| DELETE | `/api/historial` | Borrar todo el historial |
+| DELETE | `/api/historial/<id>` | Borrar sesión |
+
+#### Correos
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| POST | `/api/correos/login` | Conectar Gmail (devuelve token) |
+| POST | `/api/correos/logout` | Desconectar |
+| GET | `/api/correos/estado` | Estado de conexión |
+| POST | `/api/correos/escanear` | Escanear bandeja de entrada |
+| GET | `/api/correos/leer/<uid>` | Leer correo completo |
+
+### Autenticación de correos
+
+El módulo de correos usa un sistema de **tokens de sesión en memoria**. El usuario introduce sus credenciales una vez, se verifica la conexión IMAP y se devuelve un token UUID. Las peticiones posteriores llevan el token en el header `X-Correo-Token`.
+
+```bash
+# login
+curl -X POST http://localhost:5000/api/correos/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "tu@gmail.com", "password": "xxxx xxxx xxxx xxxx"}'
+
+# escanear bandeja
+curl -X POST http://localhost:5000/api/correos/escanear \
+  -H "Content-Type: application/json" \
+  -H "X-Correo-Token: tu-token" \
+  -d '{"limite": 10, "solo_no_leidos": false}'
+```
+
+---
+
+## Fase 8 — Frontend React
+
+Interfaz web con tema oscuro Catppuccin, CSS puro sin Tailwind.
+
+### Arrancar el frontend
+
+```bash
+cd antivirus-frontend
+npm install
+npm run dev
+```
+
+Abre `http://localhost:5173` en el navegador.
+
+### Configurar URL de la API
+
+Edita `src/api/client.js`:
+
+```js
+const BASE_URL = 'http://localhost:5000/api'
+```
 
 ---
 
@@ -495,15 +571,14 @@ python app.py
 
 ### Resumen de rendimiento
 
-| Métrica | Modelo 1 (EXE) | Modelo 2 (Código) |
-|---------|---------------|-------------------|
-| Accuracy | 98% | 90% |
-| Recall malware | 98% | 91% |
-| Precision malware | 99% | 92% |
-| Falsos negativos | ~2% | ~9% |
-| Falsos positivos | ~34% | ~10% |
-
-> El alto porcentaje de falsos positivos en el Modelo 1 se debe al fuerte desbalanceo del dataset de PE Imports (~3:1). El Modelo 2 está mucho más equilibrado.
+| Métrica | Modelo 1 (EXE) | Modelo 2 (Código) | Modelo 3 (Correos) |
+|---------|---------------|-------------------|-------------------|
+| Accuracy | 98% | 90% | 89% |
+| Recall malware/spam | 98% | 91% | 87% |
+| Precision malware/spam | 99% | 92% | 85% |
+| Dataset | ~47.500 | ~6.900 | ~37.000 |
+| Features | 1.000 | 52 | 57 |
+| Umbral | 0.5 | 0.5 | 0.4 |
 
 ### Evolución del Modelo 2
 
@@ -520,35 +595,38 @@ python app.py
 ### 1. Instalar dependencias
 
 ```bash
-pip install pandas scikit-learn xgboost joblib pefile requests
+pip install pandas scikit-learn joblib pefile flask flask-cors beautifulsoup4 tldextract python-dotenv
 ```
 
-### 2. Preparar los modelos
-
-Si no tienes los modelos entrenados, ejecuta en orden:
-
-```bash
-# Extraer features de código fuente
-python 04_extraer_features_codigo.py
-
-# Entrenar el Modelo 2
-python 06_entrenar_modelo.py
-```
-
-> El Modelo 1 requiere descargar el dataset de PE Imports de Kaggle y ejecutar el script de entrenamiento correspondiente.
-
-### 3. Lanzar la aplicación
+### 2. Lanzar la aplicación de escritorio
 
 ```bash
 python app.py
 ```
 
-### 4. Analizar archivos
+### 3. Lanzar la API
 
-- Pulsa **Analizar archivo** para seleccionar un fichero concreto
-- Pulsa **Analizar carpeta** para escanear un proyecto completo
-- Haz clic en cualquier resultado para ver el detalle en el panel lateral
-- Ve a la pestaña **Historial** y haz doble clic en una sesión para ver todos sus archivos
+```bash
+python api.py
+```
+
+### 4. Lanzar el frontend (requiere Node.js)
+
+```bash
+cd antivirus-frontend
+npm install
+npm run dev
+```
+
+### 5. Configurar Gmail
+
+```
+1. Ve a myaccount.google.com
+2. Seguridad → Verificación en dos pasos (actívala)
+3. Ve a https://myaccount.google.com/apppasswords
+4. Genera una contraseña de 16 caracteres
+5. Úsala en la pestaña Correos de la app
+```
 
 ---
 
@@ -556,21 +634,21 @@ python app.py
 
 ### Limitaciones actuales
 
-- El Modelo 1 tiene muchos falsos positivos en archivos benignos — necesita más ejemplos limpios de ejecutables
-- El análisis de `.txt` es básico — solo busca patrones superficiales sin contexto sintáctico
-- No analiza archivos comprimidos (`.zip`, `.rar`) automáticamente
+- El Modelo 1 tiene falsos positivos en archivos benignos por el desbalanceo del dataset
+- No analiza archivos comprimidos automáticamente
 - No consulta APIs externas como VirusTotal en tiempo real
 - Los modelos pueden quedar desactualizados frente a técnicas de evasión nuevas
+- El módulo de correos solo funciona con Gmail (no Outlook, Yahoo, etc.)
 
 ### Mejoras planificadas
 
-- [ ] Integración con la API de VirusTotal para cruzar hashes
+- [ ] Integración con la API de VirusTotal
 - [ ] Soporte para descomprimir y analizar `.zip` y `.rar`
-- [ ] Análisis dinámico básico con sandbox
-- [ ] Reentrenamiento automático periódico con nuevas muestras
+- [ ] Soporte para Outlook y otros proveedores de correo
+- [ ] Análisis de macros en documentos Office (.vba)
 - [ ] Exportar informe de análisis en PDF
-- [ ] Notificaciones del sistema operativo cuando se detecta malware
 - [ ] Modo vigilancia — monitorizar una carpeta en tiempo real
+- [ ] Reentrenamiento automático con nuevas muestras etiquetadas
 
 ---
 
@@ -578,6 +656,8 @@ python app.py
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-1.8-orange)
+![Flask](https://img.shields.io/badge/API-Flask-lightgrey)
+![React](https://img.shields.io/badge/Frontend-React-61dafb)
 ![Tkinter](https://img.shields.io/badge/UI-Tkinter-green)
 ![Random Forest](https://img.shields.io/badge/Model-Random%20Forest-purple)
 
@@ -585,7 +665,11 @@ python app.py
 
 ## Autor
 
-Proyecto desarrollado como ejercicio de aprendizaje en ciberseguridad y machine learning.
+**Javier Postigo Arévalo**
+
+- GitHub: [github.com/JavierPA3](https://github.com/JavierPA3)
+- LinkedIn: [linkedin.com/in/javierpostigoarevalo](https://www.linkedin.com/in/javierpostigoarevalo/)
+- Portfolio: [javierpa3.github.io/PersonalPorfolio](https://javierpa3.github.io/PersonalPorfolio/)
 
 ---
 
